@@ -57,6 +57,7 @@ public function message(){
                 $users[$user['User']['id']] = $user['User']['name'];
             }
             //echo "<pre>"; print_r($findName); "</pre>";
+            //debug($users);
             $this->set('users', $users);
             $this->set('messages', $messages);
 
