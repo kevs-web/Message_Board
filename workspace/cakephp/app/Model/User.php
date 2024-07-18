@@ -30,13 +30,55 @@ App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
  * @package       app.Model
  */
 class User extends AppModel {
+    public $validate = array(
+        'name' => array(
+            'rule' => 'notBlank',
+            'message' => 'Name is required'
+        ),
+        'name' => array(
+                'rule' => array('minLength', 5),
+                'message' => 'Name must be at least 5 characters long'
+        ),
+        'name' => array(
+            'rule' => array('maxLength', 20),
+            'message' => 'Name must not exceed 20 characters'
+        ),
+        'email' => array(
+            'rule' => 'isUnique',
+            'message' => 'Email already used'
+        ),
+        'password' => array(
+            'rule' => 'notBlank',
+            'message' => 'Password is required'
+        ),
+        'confirm_password' => array(
+            'rule' => 'confirmPasswordMatch',
+            'message' => 'Passwords do not match'
+        ),
+    );
+    public $hasMany = array(
+        'SentMessages' => array(
+            'className' => 'Message',
+            'foreignKey' => 'sender_id',
+            'dependent' => false
+        ),
+        'ReceivedMessages' => array(
+            'className' => 'Message',
+            'foreignKey' => 'receiver_id',
+            'dependent' => false
+        )
+    );
+    public function confirmPasswordMatch($check) {
+        return $this->data[$this->alias]['password'] === $this->data[$this->alias]['confirm_password'];
+    }
+
     public function beforeSave($options = array()) {
-        // if (isset($this->data[$this->alias]['password'])) {
-        //     $passwordHasher = new BlowfishPasswordHasher();
-        //     $this->data[$this->alias]['password'] = $passwordHasher->hash(
-        //         $this->data[$this->alias]['password']
-        //     );
-        // }
+        if (isset($this->data[$this->alias]['password'])) {
+            $passwordHasher = new BlowfishPasswordHasher();
+            $this->data[$this->alias]['password'] = $passwordHasher->hash(
+                $this->data[$this->alias]['password']
+            );
+        }
         return true;
     }
 }

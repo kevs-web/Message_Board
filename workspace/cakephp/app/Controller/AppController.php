@@ -42,24 +42,24 @@ class AppController extends Controller {
     // - include components
     public $components = array(
         'Flash',
+        'Session',
         'Auth' => array(
             // if the user is logged in
             'loginRedirect' => array(
                 'controller' => 'users',
-                'action' => 'index'
+                'action' => 'landing'
             ),
 
             // if teh user is not logged in AND accesses a forbidden action,
             'logoutRedirect' => array(
-                'controller' => 'pages',
-                'action' => 'display',
-                'home'
+                'controller' => 'Users',
+                'action' => 'login'
             ),
             'authenticate' => array(
                 'Form' => array(
                     // 'passwordHasher' => 'Blowfish',
                     // if you want to customize the fields for logging in
-                    // 'fields'=>array('username'=>'email','password'=>'password')
+                    'fields'=>array('email'=>'email','password'=>'password')
                 )
             )
         )

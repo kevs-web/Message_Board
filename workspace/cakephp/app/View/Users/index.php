@@ -27,7 +27,7 @@
     <tr>
         <td><?php echo $user['User']['id']; ?></td>
         <td>
-            <?php echo $user['User']['username']
+            <?php echo $user['User']['email']
             ?>
         </td>
         <td>
