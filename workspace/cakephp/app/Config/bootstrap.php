@@ -109,3 +109,10 @@ CakeLog::config('error', array(
 	'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
 	'file' => 'error',
 ));
+
+App::uses('AppError', 'Error');
+Configure::write('Exception', array(
+    'renderer' => 'AppError',
+));
+
+CakePlugin::load('DebugKit');

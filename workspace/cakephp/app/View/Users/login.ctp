@@ -1,81 +1,63 @@
-
 <style>
-    #login .container #login-row #login-column #login-box {
-  margin-top: 120px;
-  max-width: 600px;
-  height: 320px;
-  border: 1px solid #9C9C9C;
-  background-color: #EAEAEA;
-}
-#login .container #login-row #login-column #login-box #login-form {
-  padding: 20px;
-}
-#login .container #login-row #login-column #login-box #login-form #register-link {
-  margin-top: -85px;
-}
+    .card {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+        text-align:center;
+        justify-content:center;
+    }
 </style>
-<div class="text-center justify-content-center align-items-center">
-<?php echo $this->Flash->render('auth'); ?>
-</div>
-<div id="login" style="width: 60rem">
-<!-- <?php echo $this->Form->create('User'); ?> -->
-        <div class="container">
-            <div id="login-row" class="row justify-content-center align-items-center">
-                <div id="login-column" class="col-md-6">
-                    <div id="login-box" class="col-md-12">
-                         <?php echo $this->Form->create('User',['class'=>'form','id'=>'login-form']);?>
-                       
-                            <h3 class="text-center  mt-3"> <?php echo __('Login'); ?></h3>
-                            <div class="form-group">
-                           <?php echo $this->Form->input('email', ['label' => 'Email', 'style' => 'width: calc(100% - 22px)']);?>
-                           
-                            </div>
-                            <div class="form-group">
-                            <?php  echo $this->Form->input('password', ['label' => 'Password', 'type' => 'password', 'style' => 'width: calc(100% - 22px)']);?>
-                            <div class="form-group mt-4 text-center">
-                            <?php echo $this->Form->submit('Login', ['class' => 'btn-submit']);?>
-                            <br>
-                            <?php echo $this->Html->link('Sign Up', array('controller' => 'Users', 'action' => 'register')); ?>
-                            </div>
-                       <?php $this->Form->end()?>
-                    </div>
-                </div>
-            </div>
+<div class="login-wrapper m-auto">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h3 mb-3 font-weight-normal">LOGIN</h1>
+            <?php
+                echo $this->Form->create('User', array('url' => 'login', 'class' => 'form-signin'));
+                echo $this->Form->input('email', array('class' => 'form-control', 'label' => false, 'placeholder' => 'Email Address', 'required' => false));
+                echo $this->Form->input('password', array('class' => 'form-control', 'label' => false, 'placeholder' => 'Password', 'required' => false));
+                echo $this->Form->button('Sign In', array('class' => 'btn btn-lg btn-primary btn-block mt-2'));
+                echo $this->Form->end();
+                echo $this->Html->link('Register', array('controller' => 'users', 'action' => 'register'));
+            ?>
         </div>
     </div>
-<!-- <div class="users form">
-
-    <fieldset>
-        <legend>
-           
-        </legend>
-        <?php echo $this->Form->input('email');
-        echo $this->Form->input('password');
-    ?>
-    </fieldset>
-<?php echo $this->Form->end(__('Login')); ?>
-<?php echo $this->Html->link('Sign Up', array('controller' => 'Users', 'action' => 'register')); ?>
-</div> -->
-
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</div>
 <script>
     $(document).ready(function(){
-       $("input[value='Login").click(function(){
+        $('#UserLoginForm').on('submit', function(e){
+            e.preventDefault();
+            if (!$(this).find('input#UserEmail').val() || !$(this).find('input#UserPassword').val()) {
+                toastr["error"]("All Fields are required");
+                return false;
+            }
+            var form = $(this);
+
             $.ajax({
-                url: "/cakephp/users/ajaxLogin",
-                type: "POST",
-                data: {
-                    username: $("input[name='data[User][username]']").val(),
-                    password: $("input[name='data[User][password]']").val()
-                },
-                success: function(response){
-                    var res = JSON.parse(response);
-                    if (res.status == "success") {
-                        window.location.href = "/cakephp/users/index";
+                type: 'POST',
+                data: form.serialize(),
+                dataType:'json',
+                success: function(response) {
+                    if (response.status === "success") { 
+                        toastr["success"](response.message);
+                        form.trigger("reset");
+                        setTimeout(() => {
+                            window.location.href = '<?php echo $this->Html->url(array("controller" => "users", "action" => "index")) ?>';
+                        }, 1000);
+                    } else {
+                        toastr["error"](response.message);
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    toastr["error"]("Something went wrong! ");
                 }
             });
-            return false;
-       });
+        });
     });
-</script> -->
+
+        
+</script>

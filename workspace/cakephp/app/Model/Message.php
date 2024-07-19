@@ -1,22 +1,19 @@
 <?php
 
-App::uses('Model', 'Model');
+    App::uses('AppModel', 'Model');
 
+    class Message extends AppModel {
+        public $actsAs = array('Containable');
+        public $belongsTo = array(
+            'Sender' => array(
+                'className' => 'UserDetail',
+                'foreignKey' => 'from_user_id'
+            ),
+            'Recipient' => array(
+                'className' => 'UserDetail',
+                'foreignKey' => 'to_user_id'
+            )
+        );
+    }
 
-class Message extends AppModel {
-    public $useTable = 'messages';
-
-    public $belongsTo = array(
-        'Sender' => array(
-            'className' => 'User',
-            'foreignKey' => 'sender_id'
-        ),
-        'Receiver' => array(
-            'className' => 'User',
-            'foreignKey' => 'receiver_id'
-        )
-    );
-
-
-
-}
+?>

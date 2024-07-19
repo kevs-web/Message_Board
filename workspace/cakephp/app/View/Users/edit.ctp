@@ -1,103 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User Profile</title>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <!-- Include datepicker CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-    <style>
-        .scrollable-container {
-            max-height: 100px;
-            overflow-y: auto;
-        }
-        #profile-picture {
-            max-width: 100%; 
-            height: auto; 
-            max-height: 200px; 
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-<div class="text-center">
-<?php echo $this->Flash->render(); ?>
-</div>
-    <div class="card" style="width: 30rem; padding:20px">
-        <h1 class="text-center">User Profile</h1>
-        <?= $this->Form->create('User', ['type' => 'file']); ?>
-        <div class="text-center">
-        <div class="text-center">
-        <?php if (!empty($user['User']['photo'])) : ?>
-            <?= $this->Html->image($user['User']['photo'], ['id' => 'profile-picture', 'class' => 'img-thumbnail', 'width' => '200', 'height' => '200', 'alt' => 'Profile Picture']) ?>
-        <?php else : ?>
-            <img id="profile-picture" class="img-thumbnail" src="#" alt="Profile Picture" style="display: none; width: 200px; height: 200px;" />
-            <p id="no-image-msg">No profile image available.</p>
-        <?php endif; ?>
-        <br><br>
-        <?= $this->Form->button('Upload Picture', ['type' => 'button', 'class' => 'btn btn-default', 'id' => 'upload-button']) ?>
-        <?= $this->Form->file('photo', ['type' => 'file', 'id' => 'file-input', 'accept' => 'image/*', 'style' => 'display: none']) ?>
-        <br>
-        <div id="profile-info">
-            <h3>Profile Information</h3>
-            <?echo $this->Form->input('name', ['value' => $user['User']['name']]);?>
-            <?= $this->Form->input('birthdate', ['id' => 'birth-date', 'type' => 'text', 'value' => $user['User']['birthdate']]) ?>
-            <?php echo $this->Form->radio('gender', [
-                    'male' => 'Male',
-                    'female' => 'Female',
-                ], ['default' => $user['User']['gender']]);?>
-              <? echo $this->Form->input('hobby', ['label' => 'Hobby','type'=>'text', 'value' => $user['User']['hobby']]); ?>
-              <br>
-              <?= $this->Form->end('Update') ?>
+
+<?php if (isset($errors) && !empty($errors)): ?>
+        <div class="error-message">
+            <ul>
+                <?php foreach ($errors as $field => $error): ?>
+                    <?php foreach ($error as $msg): ?>
+                        <li><?php echo $msg ?></li>
+                    <?php endforeach; ?>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+<?php endif; ?>
+<div class="card profile-info">
+    <div class="card-header">
+        <div class="h3 card-title">User Profile - EDIT</div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-6">
+                <img src="<?php echo $this->Html->url('/upload/' . $profilePicture); ?>" alt="Profile Picture">
+                <button class="btn btn-info mt-2" id="upload-pic">Upload Picture</button>
+            </div>
+            <div class="col-sm-6">
+                <?php 
+                    echo $this->Form->create('UserDetail', array('type' => 'file'));
+                    echo $this->Form->input('profile', array('type' => 'file', 'style'=>'display:none;', 'accept' => 'image/gif, image/png, image/jpeg', 'label'=>false, 'id'=>'profile-input', 'required'=>false));
+                    echo $this->Form->input('name', array('value' => $userData['UserDetail']['name'], 'class' => 'form-control mb-2','required' => false));
+                    echo $this->Form->radio('gender', array('Male' => 'Male', 'Female' => 'Female'), array('value' => $userData['UserDetail']['gender']));
+                    echo $this->Form->input('birthdate', array('type'=>'text', 'id' => 'bdate', 'class' => 'form-control mb-2'));
+                    echo $this->Form->input('hubby', array('value' => $userData['UserDetail']['hubby'], 'class' => 'form-control mb-2'));
+                    echo $this->Form->button('Save & Update', array('class' =>'btn btn-primary'));
+                    echo $this->Form->end();
+                ?>  
+            </div>
         </div>
     </div>
 </div>
-
-<!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<!-- Include Bootstrap JS -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<!-- Include datepicker JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-
 <script>
-    $(document).ready(function() {
-        $('#birth-date').datepicker({
-        dateFormat: 'yy-mm-dd', // Set the format you want to use when sending to server
-        changeYear: true,
-        changeMonth: true,
-        yearRange: "-100:+0" // Adjust as needed
-    });
-        $('#upload-button').click(function() {
-            $('#file-input').click(); // Trigger the file input click
+    $(document).ready(function(){
+        $('#upload-pic').on('click', function(){
+            $('#profile-input').click();
         });
 
-        $('#file-input').change(function() {
-            var file = this.files[0];
-            if (file) {
-                // Validate file type
-                var validTypes = ['image/png', 'image/jpeg', 'image/gif'];
-                if (validTypes.indexOf(file.type) === -1) {
-                    alert('Invalid file type. Please select a PNG, JPG, or GIF image.');
-                    return;
-                }
+        $('#bdate').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1900:2050'
+        });
 
+        $('#profile-input').on('change', function(){
+            if (this.files && this.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
-                    $('#profile-picture').attr('src', e.target.result).show(); // Update the image src and show the image
-                    $('#no-image-msg').hide();
-                }
-                reader.onerror = function(error) {
-                    console.error("Error loading file: ", error); // Debugging
-                }
-                reader.readAsDataURL(file);
-            } else {
-                $('#profile-picture').hide(); // Hide the image if no file is selected
-                $('#no-image-msg').hide();
+                    $('.card.profile-info img').attr('src', e.target.result).show();
+                };
+                reader.readAsDataURL(this.files[0]);
             }
+        });
+
+        $('form#UserDetailEditForm').on('submit', function(e){
+            e.preventDefault();
+            var formData = new FormData($(this)[0]);
+
+            $.ajax({
+                type: 'POST',
+                data: formData,
+                dataType:'json',
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log(response)
+                    if (response.status === "success") { 
+                        toastr["success"](response.message);
+                        setTimeout(() => {
+                            window.location.href = '<?php echo $this->Html->url(array("controller" => "users", "action" => "index")) ?>';
+                        }, 1000);
+                    } else {
+                        $.each(response.validationErrors.UserDetail, function(i,val){
+                            toastr["error"](val);
+                        });
+                        
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    toastr["error"]("Something went wrong! ");
+                }
+            });
         });
     });
 </script>
-</body>
-</html>

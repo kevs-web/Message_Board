@@ -78,16 +78,7 @@ class PagesController extends AppController {
 		}
 	}
 
-	public function sample(){
-		echo "hello world!";
-		die();
-	}
-
-	public function home () {
-		echo "home";
-		die();
-	}
-
-	public function lazada () {
+	public function error() {
+		
 	}
 }

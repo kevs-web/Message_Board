@@ -31,45 +31,25 @@ App::uses('Controller', 'Controller');
  * @link		https://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-    // this will tell cakek to support php files for the view for rendering
-    public $ext = '.php';
 
-    // include the Post Model
-    public $uses = array(
-        'Post'
-    );
-
-    // - include components
     public $components = array(
-        'Flash',
         'Session',
+        'Flash',
+        'RequestHandler',
+        'Paginator',
         'Auth' => array(
-            // if the user is logged in
-            'loginRedirect' => array(
-                'controller' => 'users',
-                'action' => 'landing'
-            ),
-
-            // if teh user is not logged in AND accesses a forbidden action,
-            'logoutRedirect' => array(
-                'controller' => 'Users',
-                'action' => 'login'
-            ),
+            'loginRedirect' => array('controller' => 'users', 'action' => 'login'),
+            'logoutRedirect' => array('controller' => 'users', 'action' => 'login'),
             'authenticate' => array(
-                'Form' => array(
-                    // 'passwordHasher' => 'Blowfish',
-                    // if you want to customize the fields for logging in
-                    'fields'=>array('email'=>'email','password'=>'password')
+                'Form' => array( 
+                    'fields' => array('username' => 'email', 'password' => 'password')
                 )
             )
         )
     );
-    
-    public function beforeFilter(){
-        parent::beforeFilter();
-        
-        // global restriction
-        // $this->Auth->allow('index', 'view', 'add');
-        $this->set('currentUser', $this->Auth->user());
+
+    public function beforeFilter() {
+        $this->Auth->allow('login','register', 'index','edit','view'); 
     }
+
 }
