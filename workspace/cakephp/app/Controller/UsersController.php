@@ -12,7 +12,7 @@
                 $isLoggedIn = true;
                 $userData = $this->Auth->user();
 
-                $age = $this->calculateAge('1998/03/16');
+                $age = $this->calculateAge('2002/03/16');
                 if (isset($userData['UserDetail'])) {
                     $userDataDetail = $userData['UserDetail'];
                 } else {
